@@ -10,3 +10,4 @@ setuptools==75.3.0
 sgp30==0.1.6
 smbus2==0.4.3
 typing_extensions==4.12.2
+influxdb-client

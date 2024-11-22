@@ -8,6 +8,7 @@
 import time
 from grove.i2c import Bus
 import smbus2
+from influxdb_client import InfluxDBClient, Point, WriteOptions
 
 class GroveTemperatureHumidityAHT20(object):
     def __init__(self, address=0x38, bus=1):
@@ -43,12 +44,28 @@ class GroveTemperatureHumidityAHT20(object):
 
 
 def main():
+    bucket = "server_room_temperatur"
+    org = "gs" 
+    token = "4vyu6-wrsop1GtYk4aAH1IeX8lJD0ky4OSgQZ7urU04XXtvEBoMC4ePTZ4AIkQq4kxPD75SUzuoKEI8HYhAA1g=="  
+    url = "http://160.85.84.78:8086/"
+
+    # Initialize the InfluxDB client
+    client = InfluxDBClient(url=url, token=token, org=org)
+    write_api = client.write_api(write_options=WriteOptions(batch_size=1))
     sensor = GroveTemperatureHumidityAHT20()
     while True:
         temperature, humidity  = sensor.read()
 
         print('Temperature in Celsius is {:.2f} C'.format(temperature))
         print('Relative Humidity is {:.2f} %'.format(humidity))
+	# Create a data point for InfluxDB
+        point = (
+            Point("environmental_data")
+            .field("temperature", temperature)
+            .field("humidity", humidity)
+        )
+        # Write the data point to InfluxDB
+        write_api.write(bucket=bucket, record=point)
 
         time.sleep(1)
 
