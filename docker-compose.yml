@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  temperature_message:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    devices:
+      - "/dev/i2c-1:/dev/i2c-1"  # Bind mount for I2C device
+    volumes:
+      - "~/sensor-config.json:/etc/app/config.json"  # Bind mount for config.json
+    command: ["python", "temperature_humidity_aht20.py"]
