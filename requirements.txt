@@ -5,9 +5,9 @@ enum-tools==0.9.0.post1
 Pygments==2.18.0
 RPi.GPIO==0.7.1
 rpi_ws281x==5.0.0
-Seeed-grove.py==0.7
+Seeed-grove.py==0.8
 setuptools==75.3.0
 sgp30==0.1.6
 smbus2==0.4.3
 typing_extensions==4.12.2
-influxdb-client
+influxdb-client==1.48.0

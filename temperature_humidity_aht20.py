@@ -3,12 +3,12 @@
 # Library for Grove - I2C Industrial Grade Temperature & Humidity Sensor (AHT20)
 # (https://wiki.seeedstudio.com/Grove-AHT20-I2C-Industrial-Grade-Temperature&Humidity-Sensor/)
 
-
-
 import time
 from grove.i2c import Bus
 import smbus2
 from influxdb_client import InfluxDBClient, Point, WriteOptions
+
+import settings
 
 class GroveTemperatureHumidityAHT20(object):
     def __init__(self, address=0x38, bus=1):
@@ -44,30 +44,45 @@ class GroveTemperatureHumidityAHT20(object):
 
 
 def main():
-    bucket = "server_room_temperatur"
+    bucket = "server_room"
     org = "gs" 
-    token = "4vyu6-wrsop1GtYk4aAH1IeX8lJD0ky4OSgQZ7urU04XXtvEBoMC4ePTZ4AIkQq4kxPD75SUzuoKEI8HYhAA1g=="  
-    url = "http://160.85.84.78:8086/"
+    token = "cT0zhR8UKOnMsZzIzXTzcBLd3aIjQF1Yu4vYaapDQo5wJmi_YPRW800zXSEJQMggf0-fV_bwYu7UlMRGFr22QQ=="
+    url = "https://influxdb-dlp.esi.li/"
 
+    print("Initializing InfluxDB client...")
     # Initialize the InfluxDB client
-    client = InfluxDBClient(url=url, token=token, org=org)
+    client = InfluxDBClient(url=settings.DB_HOST, token=settings.DB_TOKEN, org=settings.DB_ORG)
+    print("InfluxDB client initialized successfully.")
+
     write_api = client.write_api(write_options=WriteOptions(batch_size=1))
+    print("Write API created successfully.")
+
     sensor = GroveTemperatureHumidityAHT20()
+    print("Sensor initialized successfully.")
+
     while True:
-        temperature, humidity  = sensor.read()
+        try:
+            temperature, humidity = sensor.read()
 
-        print('Temperature in Celsius is {:.2f} C'.format(temperature))
-        print('Relative Humidity is {:.2f} %'.format(humidity))
-	# Create a data point for InfluxDB
-        point = (
-            Point("environmental_data")
-            .field("temperature", temperature)
-            .field("humidity", humidity)
-        )
-        # Write the data point to InfluxDB
-        write_api.write(bucket=bucket, record=point)
+            print('Temperature in Celsius is {:.2f} C'.format(temperature))
+            print('Relative Humidity is {:.2f} %'.format(humidity))
 
-        time.sleep(1)
+            # Create a data point for InfluxDB
+            point = (
+                Point("environmental_data")
+                .field("temperature", temperature)
+                .field("humidity", humidity)
+            )
+            print(f"Point created: {point.to_line_protocol()}")
+
+            # Write the data point to InfluxDB
+            write_api.write(bucket=settings.DB_BUCKET, record=point)
+            print("Data written to InfluxDB successfully.")
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        time.sleep(settings.WAIT_INTERVAL)
 
 
 if __name__ == "__main__":

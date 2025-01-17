@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y \
 ADD requirements.txt .
 
 ADD temperature_humidity_aht20.py .
+ADD settings.py . 
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "temperature_humidity_aht20.py"]
+

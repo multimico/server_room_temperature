@@ -7,7 +7,7 @@ _settings = {
     "DB_BUCKET": os.getenv('DB_BUCKET', 'server_room'),
     "DB_ORG": os.getenv('DB_ORG', 'gs'),
     "DB_TOKEN": os.getenv('DB_TOKEN', ''),
-    "WAIT_INTERVAL": os.getenv('WAIT_INTERVAL'; 1)
+    "WAIT_INTERVAL": os.getenv('WAIT_INTERVAL', 1)
 }
 
 if os.path.exists('/etc/app/config.json'):
