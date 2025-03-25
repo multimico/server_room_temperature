@@ -1,12 +1,21 @@
+# Version declaration (Specifies the Docker Compose syntax version)
 version: '3.8'
-
+# Service Definition
+# Defines a service named temperature_message (your containerized app)
 services:
   temperature_message:
+  # Build Configuration
     build:
+      #  Builds the Docker image using files in the current directory (.)
       context: .
+      # Uses the Dockerfile in this directory to build the image
       dockerfile: Dockerfile
+    # Device Passthrough (Hardware Access)
+    # Maps the host’s /dev/i2c-1 to the container’s /dev/i2c-1
     devices:
       - "/dev/i2c-1:/dev/i2c-1"  # Bind mount for I2C device
     volumes:
+      # Binds the host’s ~/sensor-config.json file to the container’s /etc/app/config.json (runtime configuration changes without rebuilding)
       - "~/sensor-config.json:/etc/app/config.json"  # Bind mount for config.json
+    # Runs Python script temperature_humidity_aht20.py
     command: ["python", "temperature_humidity_aht20.py"]
