@@ -9,5 +9,5 @@ The service is build as a docker container that is supposed to be run on a raspb
 the launch command
 
 ```bash
-docker compose up
+docker-compose up
 ```
